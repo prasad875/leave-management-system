@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeaveMS | Smart Leave Management</title>
+    <meta name="description"
+        content="Effortless academic leave management for students and educators. Automated verification, real-time alerts, and a beautiful 3D experience.">
+    <meta name="keywords"
+        content="leave management, student portal, teacher dashboard, education tech, campus management">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-[#030712] text-white font-['Outfit'] overflow-x-hidden">
+    <!-- System Splash Overlay -->
+    <div id="system-splash">
+        <div class="splash-loader"></div>
+        <div class="splash-text">System Initializing</div>
+    </div>
+
+    <!-- Navbar -->
+    <nav
+        class="fixed top-0 w-full z-50 bg-black/20 backdrop-blur-lg border-b border-white/10 px-6 py-4 flex justify-between items-center">
+        <div class="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            LeaveMS
+        </div>
+        <div class="space-x-8 hidden md:flex items-center">
+            <a href="#" class="hover:text-blue-400 transition-colors">Home</a>
+            <a href="#about" class="hover:text-blue-400 transition-colors">About</a>
+            <a href="#features" class="hover:text-blue-400 transition-colors">Features</a>
+            <a href="#tech" class="hover:text-blue-400 transition-colors">Tech Stack</a>
+            <a href="#modules" class="hover:text-blue-400 transition-colors">Modules</a>
+            <div id="nav-auth-buttons" class="flex gap-4">
+                <button onclick="router.navigate('/login')"
+                    class="px-6 py-2 rounded-full border border-white/20 hover:bg-white/10 transition-all">Login</button>
+                <button onclick="router.navigate('/register')"
+                    class="px-6 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all">Join
+                    Now</button>
+            </div>
+            <div id="nav-user-info" class="hidden flex items-center gap-4">
+                <span id="nav-user-name" class="text-gray-400"></span>
+                <button onclick="auth.logout()" class="text-red-400 hover:text-red-300">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container (SPA) -->
+    <main id="app-container" class="min-h-screen pt-20">
+        <!-- Landing Page Initial State -->
+        <section id="hero"
+            class="relative h-[90vh] flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+            <!-- 3D Animated Background Gradients -->
+            <div class="absolute inset-0 z-0">
+                <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/30 rounded-full blur-[120px] animate-pulse">
+                </div>
+                <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/30 rounded-full blur-[120px] animate-pulse"
+                    style="animation-delay: 2s"></div>
+            </div>
+
+            <div class="relative z-10 max-w-4xl">
+                <h1 id="hero-title" class="text-5xl md:text-8xl font-extrabold mb-6 leading-tight">
+                    Effortless Leave <br />
+                    <span
+                        class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent italic">Management</span>
+                </h1>
+                <p id="hero-subtitle" class="text-gray-400 text-lg md:text-xl mb-10">
+                    Experience the future of campus leave tracking. Streamlined workflows for students and educators
+                    with automated verification and real-time alerts.
+                </p>
+                <div id="hero-cta" class="flex flex-col md:flex-row gap-6 justify-center">
+                    <button onclick="router.navigate('/register')"
+                        class="px-10 py-4 rounded-xl bg-white text-black font-bold text-lg hover:scale-105 transition-transform flex items-center justify-center gap-2">
+                        Get Started
+                    </button>
+                    <button onclick="router.navigate('/login')"
+                        class="px-10 py-4 rounded-xl border border-white/20 hover:bg-white/5 transition-all text-lg backdrop-blur-sm">
+                        Teacher Portal
+                    </button>
+                </div>
+            </div>
+
+            <!-- Floating 3D Elements - Moved outside max-w container to prevent overlap -->
+            <div id="floating-cards" class="absolute inset-0 pointer-events-none">
+                <div class="absolute top-20 left-[5%] w-32 h-32 bg-blue-500/10 backdrop-blur-xl border border-white/10 rounded-2xl rotate-12 glass-card animate-float"
+                    style="--rot: 12deg"></div>
+                <div class="absolute bottom-20 right-[5%] w-48 h-48 bg-purple-500/10 backdrop-blur-xl border border-white/10 rounded-3xl -rotate-12 glass-card animate-float"
+                    style="--rot: -12deg; animation-delay: 1s"></div>
+                <div class="absolute top-1/2 left-[85%] w-24 h-24 bg-pink-500/10 backdrop-blur-xl border border-white/10 rounded-xl rotate-45 glass-card animate-float"
+                    style="--rot: 45deg; animation-delay: 2s"></div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="py-20 px-6 max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="text-center p-8 glass-card rounded-3xl border-b-4 border-blue-500 reveal">
+                <h3 class="text-4xl font-extrabold mb-2">10k+</h3>
+                <p class="text-gray-400">Active Students</p>
+            </div>
+            <div class="text-center p-8 glass-card rounded-3xl border-b-4 border-purple-500 reveal"
+                style="transition-delay: 0.1s">
+                <h3 class="text-4xl font-extrabold mb-2">500+</h3>
+                <p class="text-gray-400">Total Teachers</p>
+            </div>
+            <div class="text-center p-8 glass-card rounded-3xl border-b-4 border-pink-500 reveal"
+                style="transition-delay: 0.2s">
+                <h3 class="text-4xl font-extrabold mb-2">99.9%</h3>
+                <p class="text-gray-400">Uptime Rate</p>
+            </div>
+            <div class="text-center p-8 glass-card rounded-3xl border-b-4 border-green-500 reveal relative overflow-hidden"
+                style="transition-delay: 0.3s">
+                <div class="absolute top-4 right-4 flex h-2 w-2">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </div>
+                <h3 class="text-4xl font-extrabold mb-2">Instant</h3>
+                <p class="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-1">Triple-Layer Sync</p>
+                <p class="text-gray-500 text-sm">Alerts Dispatched</p>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-24 px-6 max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <h2 class="text-4xl font-bold mb-6 italic">About <span class="text-blue-500">LeaveMS</span></h2>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-6">
+                        LeaveMS was born out of the need for a more efficient, transparent, and reliable way to manage
+                        academic leaves. Traditional paper-based systems are slow, prone to loss, and lack real-time
+                        visibility. Our platform provides a bridge of trust between the institution and the students.
+                    </p>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        By centralizing all requests in a digital ecosystem, we ensure that no leave application is ever
+                        ignored or delayed. Every interaction is timestamped, verified, and backed by a robust
+                        notification layer.
+                    </p>
+                </div>
+                <div class="glass-card p-8 rounded-[40px] border-l-4 border-blue-500 reveal"
+                    style="transition-delay: 0.2s">
+                    <h3 class="text-2xl font-bold mb-4">Our Mission</h3>
+                    <p class="text-gray-400 italic">
+                        "To digitize campus administration, making leave management as simple as a single click while
+                        ensuring complete accountability for all stakeholders."
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="py-32 px-6 max-w-7xl mx-auto">
+            <div class="text-center mb-20 reveal">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6 italic">Powerful <span
+                        class="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Capabilities</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Everything you need to manage academic leaves in one unified,
+                    beautiful dashboard.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div
+                    class="p-10 glass-card rounded-[40px] hover:scale-105 transition-transform duration-500 group reveal">
+                    <div
+                        class="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors">
+                        <svg class="w-8 h-8 text-blue-400 group-hover:text-white" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">Smart Submission</h4>
+                    <p class="text-gray-400">Quick leave application with automatic day calculation and teacher
+                        assignment.</p>
+                </div>
+
+                <div class="p-10 glass-card rounded-[40px] hover:scale-105 transition-transform duration-500 group reveal"
+                    style="transition-delay: 0.1s">
+                    <div
+                        class="w-16 h-16 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-600 transition-colors">
+                        <svg class="w-8 h-8 text-purple-400 group-hover:text-white" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                            </path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">Triple-Layer Alerts</h4>
+                    <p class="text-gray-400">Automated synchronization between Student, Teacher, and Parent via
+                        real-time
+                        dashboard and email notifications.</p>
+                </div>
+
+                <div class="p-10 glass-card rounded-[40px] hover:scale-105 transition-transform duration-500 group reveal"
+                    style="transition-delay: 0.2s">
+                    <div
+                        class="w-16 h-16 bg-pink-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-pink-600 transition-colors">
+                        <svg class="w-8 h-8 text-pink-400 group-hover:text-white" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                            </path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">Teacher Portal</h4>
+                    <p class="text-gray-400">Dedicated dashboard for educators to filter, view, and approve requests
+                        seamlessly.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Architecture -->
+        <section id="tech" class="py-24 px-6 bg-white/5">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-4xl font-bold mb-16 text-center reveal">Technical <span
+                        class="text-purple-500">Core</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="tech-stack-item p-6 glass-card rounded-2xl border border-white/10 reveal">
+                        <h4 class="text-xl font-bold mb-3 text-blue-400">Frontend</h4>
+                        <p class="text-sm text-gray-400">Pure HTML5, Vanilla JavaScript, and Tailwind CSS for a
+                            lightweight yet powerful UI.</p>
+                    </div>
+                    <div class="tech-stack-item p-6 glass-card rounded-2xl border border-white/10 reveal"
+                        style="transition-delay: 0.1s">
+                        <h4 class="text-xl font-bold mb-3 text-purple-400">Animations</h4>
+                        <p class="text-sm text-gray-400">GSAP (GreenSock) for high-performance 3D transforms and smooth
+                            scroll interactions.</p>
+                    </div>
+                    <div class="tech-stack-item p-6 glass-card rounded-2xl border border-white/10 reveal"
+                        style="transition-delay: 0.2s">
+                        <h4 class="text-xl font-bold mb-3 text-pink-400">Communication</h4>
+                        <p class="text-sm text-gray-400">Automated synchronization via <span
+                                class="text-pink-400 font-bold">Nodemailer</span>, powering our Triple-Layer Alert
+                            system for
+                            students, teachers, and parents.</p>
+                    </div>
+                    <div class="tech-stack-item p-6 glass-card rounded-2xl border border-white/10 reveal"
+                        style="transition-delay: 0.3s">
+                        <h4 class="text-xl font-bold mb-3 text-green-400">Database</h4>
+                        <p class="text-sm text-gray-400">SQLite for reliable, relational data storage ensuring ACID
+                            compliance.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Modules -->
+        <section id="modules" class="py-24 px-6 max-w-7xl mx-auto">
+            <h2
+                class="text-4xl font-bold mb-16 text-center italic text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 reveal">
+                Advanced Modules</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="p-8 glass-card rounded-[40px] border-t-4 border-blue-500 reveal">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center text-2xl">🎓
+                        </div>
+                        <h3 class="text-2xl font-bold">Student Module</h3>
+                    </div>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex gap-2"><span>•</span> Instant Leave Application</li>
+                        <li class="flex gap-2"><span>•</span> Real-time Status Tracking</li>
+                        <li class="flex gap-2"><span>•</span> Automated Day Calculation</li>
+                        <li class="flex gap-2"><span>•</span> History of Past Requests</li>
+                    </ul>
+                </div>
+                <div class="p-8 glass-card rounded-[40px] border-t-4 border-purple-500 reveal"
+                    style="transition-delay: 0.2s">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-purple-600/20 rounded-xl flex items-center justify-center text-2xl">
+                            👨‍🏫
+                        </div>
+                        <h3 class="text-2xl font-bold">Teacher Module</h3>
+                    </div>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex gap-2"><span>•</span> Unified Request Inbox</li>
+                        <li class="flex gap-2"><span>•</span> One-Click Processing</li>
+                        <li class="flex gap-2"><span>•</span> Advanced Search & Filtering</li>
+                        <li class="flex gap-2"><span>•</span> Commenting & Feedback System</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Benefits Section -->
+        <section class="py-32 px-6 bg-gradient-to-b from-transparent to-blue-900/10">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+                <div class="reveal">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-8 italic">Precision Built for <br /><span
+                            class="text-blue-500 underline decoration-blue-500/30">Educational Success</span></h2>
+                    <ul class="space-y-6">
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center shrink-0">
+                                ✓</div>
+                            <p class="text-gray-300"><strong>Triple-Layer Alerts:</strong> Real-time synchronization for
+                                Students, Teachers, and Parents via automated Nodemailer services.</p>
+                        </li>
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 bg-blue-500/20 text-blue-500 rounded-full flex items-center justify-center shrink-0">
+                                ✓</div>
+                            <p class="text-gray-300"><strong>Real-time Speed:</strong> Built using the latest SPA
+                                architecture for instantaneous role-based view switching.</p>
+                        </li>
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 bg-purple-500/20 text-purple-500 rounded-full flex items-center justify-center shrink-0">
+                                ✓</div>
+                            <p class="text-gray-300"><strong>Modern UX:</strong> 3D GSAP animations provide a premium
+                                interface that students and teachers enjoy using.</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="grid grid-cols-2 gap-4 reveal" style="transition-delay: 0.2s">
+                    <div
+                        class="h-64 bg-gradient-to-br from-blue-600/20 to-transparent border border-white/10 rounded-3xl p-6 hover-3d transition-3d glass-card">
+                        <p class="text-4xl mb-4">🛡️</p>
+                        <h6 class="font-bold">Encrypted</h6>
+                        <p class="text-xs text-gray-400 mt-2">JWT protected sessions and Bcrypt hashed passwords.</p>
+                    </div>
+                    <div
+                        class="h-64 mt-12 bg-gradient-to-br from-purple-600/20 to-transparent border border-white/10 rounded-3xl p-6 hover-3d transition-3d glass-card">
+                        <p class="text-4xl mb-4">⚡</p>
+                        <h6 class="font-bold">Fast</h6>
+                        <p class="text-xs text-gray-400 mt-2">Optimized SQLite queries for sub-millisecond
+                            responses.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Working Process -->
+        <section class="py-32 px-6 max-w-7xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold mb-20 text-center reveal">Seamless <span
+                    class="text-blue-500">Workflow</span></h2>
+            <div class="relative">
+                <!-- Line -->
+                <div
+                    class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 -translate-y-1/2 opacity-20">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-12 relative z-10">
+                    <div class="text-center group reveal">
+                        <div
+                            class="w-20 h-20 bg-blue-600 rounded-full mx-auto flex items-center justify-center text-3xl font-bold mb-6 shadow-[0_0_30px_rgba(37,99,235,0.4)] group-hover:scale-110 transition-transform">
+                            1</div>
+                        <h5 class="text-xl font-bold mb-2">Registration</h5>
+                        <p class="text-gray-400 text-sm">Join as a student or teacher to access your portal.</p>
+                    </div>
+                    <div class="text-center group reveal" style="transition-delay: 0.1s">
+                        <div
+                            class="w-20 h-20 bg-purple-600 rounded-full mx-auto flex items-center justify-center text-3xl font-bold mb-6 shadow-[0_0_30px_rgba(147,51,234,0.4)] group-hover:scale-110 transition-transform">
+                            2</div>
+                        <h5 class="text-xl font-bold mb-2">Submission</h5>
+                        <p class="text-gray-400 text-sm">Apply for leave with a beautiful, simple form.</p>
+                    </div>
+                    <div class="text-center group reveal" style="transition-delay: 0.2s">
+                        <div
+                            class="w-20 h-20 bg-pink-600 rounded-full mx-auto flex items-center justify-center text-3xl font-bold mb-6 shadow-[0_0_30px_rgba(236,72,153,0.4)] group-hover:scale-110 transition-transform">
+                            3</div>
+                        <h5 class="text-xl font-bold mb-2">Review</h5>
+                        <p class="text-gray-400 text-sm">Teachers review and process requests instantly.</p>
+                    </div>
+                    <div class="text-center group reveal" style="transition-delay: 0.3s">
+                        <div
+                            class="w-20 h-20 bg-green-600 rounded-full mx-auto flex items-center justify-center text-3xl font-bold mb-6 shadow-[0_0_30px_rgba(34,197,94,0.4)] group-hover:scale-110 transition-transform">
+                            4</div>
+                        <h5 class="text-xl font-bold mb-2">Approval</h5>
+                        <p class="text-gray-400 text-sm">Get notified via email and track your live status.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="py-32 px-6">
+            <h2 class="text-4xl md:text-5xl font-bold mb-20 text-center italic reveal">What Our <span
+                    class="text-purple-500">Users Say</span></h2>
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-8 glass-card rounded-[40px] reveal">
+                    <div class="flex gap-1 text-yellow-500 mb-6">★★★★★</div>
+                    <p class="text-gray-400 mb-8 italic">"The automated email notifications are a life saver. I no
+                        longer have to check the dashboard every hour to see if my sick leave was approved."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-bold">R
+                        </div>
+                        <div>
+                            <h6 class="font-bold">Rahul Verma</h6>
+                            <p class="text-xs text-gray-500">Computer Science Student</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 glass-card rounded-[40px] reveal" style="transition-delay: 0.1s">
+                    <div class="flex gap-1 text-yellow-500 mb-6">★★★★★</div>
+                    <p class="text-gray-400 mb-8 italic">"As a teacher with 60+ students, being able to filter requests
+                        and process them with one click has saved me hours of administrative work."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center font-bold">P
+                        </div>
+                        <div>
+                            <h6 class="font-bold">Prof. Priya Das</h6>
+                            <p class="text-xs text-gray-500">Department Head</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 glass-card rounded-[40px] reveal" style="transition-delay: 0.2s">
+                    <div class="flex gap-1 text-yellow-500 mb-6">★★★★★</div>
+                    <p class="text-gray-400 mb-8 italic">"The 3D interface is stunning. It feels like using a top-tier
+                        modern app. Highly recommend for any institution looking to modernize."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-pink-600 rounded-full flex items-center justify-center font-bold">A
+                        </div>
+                        <div>
+                            <h6 class="font-bold">Ankit Sharma</h6>
+                            <p class="text-xs text-gray-500">Engineering Student</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="py-32 px-6 max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold mb-16 text-center reveal">Common <span class="text-blue-400">Questions</span>
+            </h2>
+            <div class="space-y-6">
+                <div class="p-6 glass-card rounded-2xl reveal">
+                    <h6 class="font-bold text-lg mb-2">How do I track my leave?</h6>
+                    <p class="text-gray-400">Log in to your Student Dashboard to see live status updates and historical
+                        records of all your applications.</p>
+                </div>
+                <div class="p-6 glass-card rounded-2xl reveal" style="transition-delay: 0.1s">
+                    <h6 class="font-bold text-lg mb-2">Can I apply for multiple days?</h6>
+                    <p class="text-gray-400">Yes! Our system automatically calculates the total duration based on your
+                        start and end dates.</p>
+                </div>
+                <div class="p-6 glass-card rounded-2xl reveal" style="transition-delay: 0.2s">
+                    <h6 class="font-bold text-lg mb-2">Are my details secure?</h6>
+                    <p class="text-gray-400">Absolutely. We use industry-standard encryption for passwords and session
+                        management.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="py-32 px-6">
+            <div
+                class="max-w-5xl mx-auto glass-card rounded-[50px] p-20 text-center relative overflow-hidden group reveal">
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                </div>
+                <h2 class="text-5xl font-bold mb-8 relative z-10">Ready to simplify leave tracking?</h2>
+                <p class="text-xl text-gray-400 mb-12 relative z-10">Join hundreds of institutions using LeaveMS today.
+                </p>
+                <button onclick="router.navigate('/register')"
+                    class="relative z-10 px-12 py-5 bg-white text-black font-extrabold rounded-2xl hover:scale-110 transition-transform shadow-[0_20px_40px_rgba(255,255,255,0.1)]">Create
+                    Free Account</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Deep Footer -->
+    <footer class="bg-black border-t border-white/10 pt-20 pb-10 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+            <div class="col-span-1 md:col-span-2">
+                <div
+                    class="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6">
+                    LeaveMS</div>
+                <p class="text-gray-400 max-w-sm mb-8 leading-relaxed">
+                    Pioneering the future of institutional administration with elegant design and robust technology.
+                    Making academic life simpler, one leave at a time.
+                </p>
+                <div class="flex gap-4">
+                    <div
+                        class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer">
+                        𝕏</div>
+                    <div
+                        class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-purple-600 transition-colors cursor-pointer">
+                        in</div>
+                    <div
+                        class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-pink-600 transition-colors cursor-pointer">
+                        ɢ</div>
+                </div>
+            </div>
+            <div>
+                <h6 class="font-bold mb-6 text-white">Platform</h6>
+                <ul class="space-y-4 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Home</a></li>
+                    <li><a href="#about" class="hover:text-blue-400 transition-colors">About Us</a></li>
+                    <li><a href="#features" class="hover:text-blue-400 transition-colors">Features</a></li>
+                    <li><a href="#modules" class="hover:text-blue-400 transition-colors">Modules</a></li>
+                </ul>
+            </div>
+            <div>
+                <h6 class="font-bold mb-6 text-white">Legal</h6>
+                <ul class="space-y-4 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Terms of Service</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Cookie Policy</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Security</a></li>
+                </ul>
+            </div>
+        </div>
+        <div
+            class="max-w-7xl mx-auto border-t border-white/5 pt-10 flex flex-col md:row justify-between items-center text-gray-500 text-xs gap-4">
+            <p>© 2026 LeaveMS. All rights reserved.</p>
+            <div class="flex gap-8">
+                <span>Made with 💜 for education</span>
+                <span>v2.0.4-stable</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global UI Elements -->
+    <div id="toast-container" class="fixed bottom-8 right-8 z-[100] flex flex-col gap-4"></div>
+
+    <button id="scroll-to-top"
+        class="fixed bottom-8 right-8 z-[90] w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white opacity-0 pointer-events-none transition-all hover:bg-white hover:text-black shadow-2xl group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:-translate-y-1 transition-transform"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <script src="js/router.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
